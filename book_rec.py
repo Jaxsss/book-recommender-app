@@ -3,11 +3,11 @@ import pandas as pd
 import numpy as np
 
 # load ratings
-ratings = pd.read_csv('Downloads/BX-Book-Ratings.csv', encoding='cp1251', sep=';')
+ratings = pd.read_csv('./BX-Book-Ratings.csv', encoding='cp1251', sep=';')
 ratings = ratings[ratings['Book-Rating']!=0]
 
 # load books
-books = pd.read_csv('Downloads/BX-Books.csv',  encoding='cp1251', sep=';',error_bad_lines=False)
+books = pd.read_csv('./BX-Books.csv',  encoding='cp1251', sep=';',error_bad_lines=False)
 
 #users_ratigs = pd.merge(ratings, users, on=['User-ID'])
 dataset = pd.merge(ratings, books, on=['ISBN'])
@@ -71,5 +71,6 @@ for LoR_book in LoR_list:
     worst_list.append(corr_fellowship.sort_values('corr', ascending = False).tail(10))
     
 print("Correlation for book:", LoR_list[0])
-#print("Average rating of LOR:", ratings_data_raw[ratings_data_raw['Book-Title']=='the fellowship of the ring (the lord of the rings, part 1'].groupby(ratings_data_raw['Book-Title']).mean()))
+#print("Average rating of LOR:", ratings_data_raw[ratings_data_raw['Book-Title']=='the fellowship of the ring (the lord of the rings, part 1'].groupby(ratings_data_raw['Book-Title']).mean())
 rslt = result_list[0]
+print(rslt)
