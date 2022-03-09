@@ -14,7 +14,11 @@ ratings = pd.read_csv('./BX-Book-Ratings.csv', encoding='cp1251', sep=';')
 ratings = ratings[ratings['Book-Rating']!=0]
 
 # load books
+<<<<<<< Updated upstream
 books = pd.read_csv('./BX-Books.csv',  encoding='cp1251', sep=';', on_bad_lines='skip', low_memory=False)
+=======
+books = pd.read_csv('./BX-Books.csv', encoding='cp1251', sep=';', on_bad_lines='skip', low_memory=False)
+>>>>>>> Stashed changes
 
 #users_ratings = pd.merge(ratings, users, on=['User-ID'])
 dataset = pd.merge(ratings, books, on=['ISBN'])
@@ -59,6 +63,7 @@ LoR_list = [selected_book_title.lower()]
 result_list = []
 worst_list = []
 
+<<<<<<< Updated upstream
 book_names = []
 book_correlations = []
 book_rating = []
@@ -119,3 +124,38 @@ if submit:
 else:
     pass
 
+=======
+# for each of the trilogy book compute:
+for LoR_book in LoR_list:
+    
+    #Take out the Lord of the Rings selected book from correlation dataframe
+    dataset_of_other_books = dataset_for_corr.copy(deep=False)
+    dataset_of_other_books.drop([LoR_book], axis=1, inplace=True)
+      
+    # empty lists
+    book_titles = []
+    correlations = []
+    avgrating = []
+
+    # corr computation
+    for book_title in list(dataset_of_other_books.columns.values):
+        book_titles.append(book_title)
+        correlations.append(dataset_for_corr[LoR_book].corr(dataset_of_other_books[book_title]))
+        tab=(ratings_data_raw[ratings_data_raw['Book-Title']==book_title].groupby(ratings_data_raw['Book-Title']).mean())
+        avgrating.append(tab['Book-Rating'].min())
+    # final dataframe of all correlation of each book   
+    corr_fellowship = pd.DataFrame(list(zip(book_titles, correlations, avgrating)), columns=['book','corr','avg_rating'])
+    corr_fellowship.head()
+
+    # top 10 books with highest corr
+    result_list.append(corr_fellowship.sort_values('corr', ascending = False).head(10))
+    
+    #worst 10 books
+    worst_list.append(corr_fellowship.sort_values('corr', ascending = False).tail(10))
+
+print(LoR_list)
+print("Correlation for book:", LoR_list[0])
+#print("Average rating of LOR:", ratings_data_raw[ratings_data_raw['Book-Title']=='the fellowship of the ring (the lord of the rings, part 1'].groupby(ratings_data_raw['Book-Title']).mean())
+rslt = result_list[0]
+print(rslt)
+>>>>>>> Stashed changes
