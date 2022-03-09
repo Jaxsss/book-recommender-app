@@ -7,13 +7,17 @@ ratings = pd.read_csv('./BX-Book-Ratings.csv', encoding='cp1251', sep=';')
 ratings = ratings[ratings['Book-Rating']!=0]
 
 # load books
-books = pd.read_csv('./BX-Books.csv',  encoding='cp1251', sep=';',error_bad_lines=False)
+books = pd.read_csv('./BX-Books.csv',  encoding='cp1251', sep=';', on_bad_lines='skip', low_memory=False)
 
 #users_ratigs = pd.merge(ratings, users, on=['User-ID'])
 dataset = pd.merge(ratings, books, on=['ISBN'])
 dataset_lowercase=dataset.apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
 
-tolkien_readers = dataset_lowercase['User-ID'][(dataset_lowercase['Book-Title']=='the fellowship of the ring (the lord of the rings, part 1)') & (dataset_lowercase['Book-Author'].str.contains("tolkien"))]
+book_title = str(input('What is the book title? ')).lower()
+book_author = str(input('What is the book author? ')).lower()
+
+tolkien_readers = dataset_lowercase['User-ID'][(dataset_lowercase['Book-Title'] == book_title) & (
+            dataset_lowercase['Book-Author'].str.contains(book_author))]
 tolkien_readers = tolkien_readers.tolist()
 tolkien_readers = np.unique(tolkien_readers)
 
@@ -37,7 +41,7 @@ ratings_data_raw_nodup = ratings_data_raw_nodup.to_frame().reset_index()
 
 dataset_for_corr = ratings_data_raw_nodup.pivot(index='User-ID', columns='Book-Title', values='Book-Rating')
 
-LoR_list = ['the fellowship of the ring (the lord of the rings, part 1)']
+LoR_list = [book_title]
 
 result_list = []
 worst_list = []
@@ -47,7 +51,11 @@ for LoR_book in LoR_list:
     
     #Take out the Lord of the Rings selected book from correlation dataframe
     dataset_of_other_books = dataset_for_corr.copy(deep=False)
-    dataset_of_other_books.drop([LoR_book], axis=1, inplace=True)
+    try:
+        dataset_of_other_books.drop([LoR_book], axis=1, inplace=True)
+    except:
+        print('This book might not be in the database, try typing full name of the book.')
+        quit()
       
     # empty lists
     book_titles = []
